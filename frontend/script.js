@@ -1,9 +1,6 @@
 "use strict";
 
-const API_BASE =
-    window.location.hostname === "localhost"
-        ? "http://127.0.0.1:5000"
-        : "https://ai-latex-diagram-generator.onrender.com";
+const API_BASE = "https://ai-latex-diagram-generator.onrender.com";
 const EMPTY_TIKZ_TEXT = "% Generated TikZ code will appear here.";
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 const ALLOWED_UPLOAD_TYPES = new Set(["png", "jpg", "jpeg"]);

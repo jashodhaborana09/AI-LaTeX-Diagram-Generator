@@ -224,6 +224,15 @@ def create_app() -> Flask:
         UPLOAD_FOLDER=str(UPLOAD_FOLDER),
         GENERATED_FOLDER=str(GENERATED_FOLDER),
     )
+    FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+
+    @app.route("/", methods=["GET", "HEAD"])
+    def index() -> Response:
+        return send_from_directory(FRONTEND_DIR, "index.html")
+
+    @app.route("/<path:filename>")
+    def frontend_files(filename: str) -> Response:
+        return send_from_directory(FRONTEND_DIR, filename)
 
     configure_security(app)
     CORS(app, resources={r"/*": {"origins": FRONTEND_ORIGINS}})

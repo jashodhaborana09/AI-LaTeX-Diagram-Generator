@@ -227,7 +227,13 @@ def create_app() -> Flask:
     
 
     configure_security(app)
-    CORS(app)
+    CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://ai-latex-diagram-generator.vercel.app"
+        ]
+    }
+})
     limiter.init_app(app)
     ensure_directories(app)
     register_request_hooks(app)

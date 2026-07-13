@@ -152,12 +152,32 @@ SUPPORTED_TIKZ_COMMANDS = {
     "foreach",
     "definecolor",
     "tikzset",
+
+    # text formatting
     "textbf",
     "textit",
     "texttt",
-    "small",
-    "footnotesize",
+
+    # font declarations
+    "ttfamily",
+    "rmfamily",
+    "sffamily",
+    "bfseries",
+    "itshape",
+    "scshape",
+    "mdseries",
+
+    # font sizes
+    "tiny",
     "scriptsize",
+    "footnotesize",
+    "small",
+    "normalsize",
+    "large",
+    "Large",
+    "LARGE",
+    "huge",
+    "Huge",
 }
 DISALLOWED_TIKZ_COMMANDS = {
     "documentclass",

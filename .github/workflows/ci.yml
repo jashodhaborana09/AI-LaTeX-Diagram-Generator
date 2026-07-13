@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Check Python syntax
+        run: python -m py_compile backend/app.py backend/compiler.py backend/granite.py backend/image_processor.py backend/prompt_template.py backend/tikz_generator.py scripts/validate_env.py gunicorn.conf.py
+
+      - name: Run pytest
+        run: python -m pytest
+
+      - name: Build Docker image
+        run: docker build -t ai-latex-diagram-generator:ci .
+
+      - name: Start Docker container
+        run: docker run -d --name ai-latex-ci -e VALIDATE_ENV_ON_START=false -p 5000:5000 ai-latex-diagram-generator:ci
+
+      - name: Verify health endpoint
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:5000/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs ai-latex-ci
+          exit 1
+
+      - name: Stop Docker container
+        if: always()
+        run: docker stop ai-latex-ci || true
+
+      - name: Remove Docker container
+        if: always()
+        run: docker rm ai-latex-ci || true

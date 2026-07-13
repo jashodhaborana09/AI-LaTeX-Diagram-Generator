@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+generated/*
+!generated/.gitkeep
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Flask
+instance/*
+!instance/.gitkeep
+
+# Generated data and uploads
+data/uploads/*
+data/processed/*
+data/generated/images/*
+data/generated/latex/*
+data/generated/pdf/*
+data/generated/tikz/*
+data/generated/work/*
+data/generated/**/*.pdf
+data/generated/**/*.png
+generated/**/*.pdf
+generated/**/*.png
+uploads/*
+!data/uploads/.gitkeep
+!data/processed/.gitkeep
+!data/generated/images/.gitkeep
+!data/generated/latex/.gitkeep
+!data/generated/pdf/.gitkeep
+!data/generated/tikz/.gitkeep
+!uploads/.gitkeep
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Local notebooks
+.ipynb_checkpoints/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker-tmp/
+docker-compose.override.yml
+*.dockerbuild
+*.tar
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Distribution
+build/
+dist/
+*.egg-info/

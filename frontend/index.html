@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI-powered LaTeX and TikZ diagram generator powered by IBM Granite.">
+  <title>AI-LaTeX Diagram Generator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar glass-panel">
+      <a class="skip-link" href="#diagram-prompt">Skip to prompt</a>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i class="bi bi-stars"></i></span>
+        <div>
+          <p class="eyebrow">IBM Granite + TikZ Compiler</p>
+          <h1>AI-LaTeX Diagram Generator</h1>
+        </div>
+      </div>
+      <div class="topbar-actions" aria-label="Workspace status">
+        <span class="system-pill"><i class="bi bi-cloud-check" aria-hidden="true"></i> Backend API</span>
+        <span class="system-pill"><i class="bi bi-shield-check" aria-hidden="true"></i> Production Ready</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="composer glass-panel" aria-labelledby="composer-title">
+        <div class="section-title">
+          <p class="eyebrow">Prompt Studio</p>
+          <h2 id="composer-title">Create a Diagram</h2>
+        </div>
+
+        <form id="diagram-form" class="control-form" enctype="multipart/form-data">
+          <label class="field">
+            <span><i class="bi bi-pencil-square" aria-hidden="true"></i> Describe your diagram</span>
+            <textarea
+              id="diagram-prompt"
+              name="prompt"
+              placeholder="Create a transformer architecture diagram with encoder blocks, decoder blocks, attention flow, and labeled arrows."
+              required
+              aria-describedby="prompt-help"
+            ></textarea>
+            <span id="prompt-help" class="field-help">Use natural language. The backend will return TikZ, PDF, and PNG artifacts.</span>
+          </label>
+
+          <section class="upload-zone" id="upload-zone" aria-labelledby="upload-title">
+            <div class="upload-copy">
+              <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i>
+              <div>
+                <h3 id="upload-title">Reference Image</h3>
+                <p>Drop a PNG or JPG here, or choose a file.</p>
+              </div>
+            </div>
+            <input id="reference-image" name="file" type="file" accept=".png,.jpg,.jpeg" aria-label="Reference image upload">
+            <button type="button" class="secondary-button" id="upload-btn">
+              <i class="bi bi-upload" aria-hidden="true"></i>
+              Upload
+            </button>
+            <div class="upload-preview" id="upload-preview" hidden>
+              <img id="upload-thumb" alt="Selected reference image preview">
+              <div>
+                <strong id="upload-file-name"></strong>
+                <span id="upload-file-meta"></span>
+              </div>
+              <button type="button" class="icon-button" id="remove-upload-btn" aria-label="Remove selected image">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="drag-overlay" id="drag-overlay" aria-hidden="true">
+              <i class="bi bi-file-earmark-image"></i>
+              <span>Drop image to attach</span>
+            </div>
+          </section>
+
+          <button type="button" class="primary-button" id="generate-btn">
+            <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
+            Generate Diagram
+          </button>
+
+          <details class="editor-collapse" open>
+            <summary>
+              <span><i class="bi bi-stars" aria-hidden="true"></i> Refine Diagram</span>
+              <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </summary>
+            <label class="field">
+              <span class="sr-only">Refinement instruction</span>
+              <textarea
+                id="refine-instruction"
+                name="instruction"
+                placeholder="Example: Move the decision node to the right and make data-flow arrows thicker."
+              ></textarea>
+            </label>
+            <div class="button-row">
+              <button type="button" class="secondary-button" id="refine-btn">
+                <i class="bi bi-magic" aria-hidden="true"></i>
+                Refine
+              </button>
+              <button type="button" class="ghost-button" id="clear-btn">
+                <i class="bi bi-trash3" aria-hidden="true"></i>
+                Clear
+              </button>
+            </div>
+          </details>
+        </form>
+
+        <section class="progress-card" aria-labelledby="progress-title">
+          <div class="section-title compact">
+            <p class="eyebrow">Generation Workflow</p>
+            <h2 id="progress-title">Pipeline</h2>
+          </div>
+          <ol class="progress-steps" id="progress-steps" aria-live="polite">
+            <li data-step="Understanding prompt"><span></span>Understanding prompt</li>
+            <li data-step="Generating TikZ"><span></span>Generating TikZ</li>
+            <li data-step="Validating"><span></span>Validating</li>
+            <li data-step="Compiling PDF"><span></span>Compiling PDF</li>
+            <li data-step="Creating PNG"><span></span>Creating PNG</li>
+            <li data-step="Complete"><span></span>Complete</li>
+          </ol>
+          <p class="status-line" id="status-line" role="status" aria-live="polite">Ready for input.</p>
+          <span class="status-badge" id="status-badge" data-status="ready">Ready</span>
+        </section>
+      </section>
+
+      <section class="results glass-panel" aria-labelledby="results-title">
+        <div class="results-header">
+          <div class="section-title">
+            <p class="eyebrow">Output Workspace</p>
+            <h2 id="results-title">Preview and Source</h2>
+          </div>
+          <div class="segmented-control" role="tablist" aria-label="Output panels">
+            <button type="button" class="segment is-active" role="tab" aria-selected="true" aria-controls="tab-preview" data-tab="preview">Preview</button>
+            <button type="button" class="segment" role="tab" aria-selected="false" aria-controls="tab-code" data-tab="code">Code</button>
+            <button type="button" class="segment" role="tab" aria-selected="false" aria-controls="tab-downloads" data-tab="downloads">Downloads</button>
+          </div>
+        </div>
+
+        <section class="tab-panel is-active" id="tab-preview" role="tabpanel">
+          <div class="panel-toolbar">
+            <div class="segmented-control small" role="tablist" aria-label="Preview type">
+              <button type="button" class="segment is-active" role="tab" aria-selected="true" data-preview-tab="png">PNG</button>
+              <button type="button" class="segment" role="tab" aria-selected="false" data-preview-tab="pdf">PDF</button>
+              <button type="button" class="segment" role="tab" aria-selected="false" data-preview-tab="split">Side by Side</button>
+            </div>
+            <div class="tool-group" aria-label="Preview controls">
+              <button type="button" class="icon-button" id="zoom-out-btn" aria-label="Zoom out"><i class="bi bi-zoom-out" aria-hidden="true"></i></button>
+              <span id="zoom-level" class="zoom-label">100%</span>
+              <button type="button" class="icon-button" id="zoom-in-btn" aria-label="Zoom in"><i class="bi bi-zoom-in" aria-hidden="true"></i></button>
+              <button type="button" class="icon-button" id="fit-btn" aria-label="Fit preview to screen"><i class="bi bi-arrows-angle-contract" aria-hidden="true"></i></button>
+              <button type="button" class="icon-button" id="fullscreen-btn" aria-label="Open fullscreen preview"><i class="bi bi-fullscreen" aria-hidden="true"></i></button>
+            </div>
+          </div>
+          <div class="preview-shell" id="preview-shell">
+            <div class="preview-pane is-active" id="png-pane">
+              <div class="preview-frame" id="diagram-preview" role="img" aria-label="Generated PNG preview">
+                <p>Generated PNG preview will appear here.</p>
+              </div>
+            </div>
+            <div class="preview-pane" id="pdf-pane">
+              <div class="pdf-frame" id="pdf-preview">
+                <p>Compiled PDF will appear here.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-code" role="tabpanel" hidden>
+          <details class="code-card" open>
+            <summary>
+              <span><i class="bi bi-code-square" aria-hidden="true"></i> TikZ Source</span>
+              <span class="summary-actions">
+                <button type="button" class="secondary-button compact-button" id="copy-code-btn">
+                  <i class="bi bi-copy" aria-hidden="true"></i>
+                  Copy
+                </button>
+                <button type="button" class="secondary-button compact-button" id="download-tex-btn">
+                  <i class="bi bi-file-earmark-code" aria-hidden="true"></i>
+                  Download .tex
+                </button>
+              </span>
+            </summary>
+            <pre class="code-viewer" id="code-viewer" aria-label="TikZ code viewer"><code id="tikz-output"></code></pre>
+          </details>
+        </section>
+
+        <section class="tab-panel" id="tab-downloads" role="tabpanel" hidden>
+          <div class="download-card">
+            <div class="section-title compact">
+              <p class="eyebrow">Exports</p>
+              <h2>Download Assets</h2>
+            </div>
+            <div class="download-list">
+              <button type="button" class="download-item" data-asset="pdf">
+                <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                <span><strong>PDF</strong><small>Compiled document</small></span>
+              </button>
+              <button type="button" class="download-item" data-asset="png">
+                <i class="bi bi-image" aria-hidden="true"></i>
+                <span><strong>PNG</strong><small>Preview image</small></span>
+              </button>
+              <button type="button" class="download-item" data-asset="tex">
+                <i class="bi bi-filetype-tex" aria-hidden="true"></i>
+                <span><strong>TEX</strong><small>LaTeX source</small></span>
+              </button>
+              <button type="button" class="download-item" data-asset="zip" disabled aria-disabled="true">
+                <i class="bi bi-file-zip" aria-hidden="true"></i>
+                <span><strong>ZIP</strong><small>Available when backend provides it</small></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="error-panel" id="error-panel" hidden aria-labelledby="error-title">
+          <details open>
+            <summary>
+              <span id="error-title"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Compile Error</span>
+              <button type="button" class="secondary-button compact-button" id="retry-btn">
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                Retry
+              </button>
+            </summary>
+            <div class="error-grid">
+              <article>
+                <h3>Compiler message</h3>
+                <pre id="compiler-message"></pre>
+              </article>
+              <article>
+                <h3>TikZ source</h3>
+                <pre id="error-tikz-source"></pre>
+              </article>
+            </div>
+          </details>
+        </section>
+      </section>
+
+      <aside class="history-panel glass-panel" aria-labelledby="history-title">
+        <div class="section-title compact">
+          <p class="eyebrow">Session</p>
+          <h2 id="history-title">History</h2>
+        </div>
+        <div class="history-list" id="history-list">
+          <p class="empty-state">Generated diagrams will appear here.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-label="Notifications"></div>
+  <script src="script.js"></script>
+</body>
+</html>

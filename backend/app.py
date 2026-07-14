@@ -60,6 +60,9 @@ EMPTY_NODE_RE = re.compile(r"\\node(?:\s*\[[^\]]*\])?(?:\s*\([^)]*\))?(?:\s+at\s
 NODE_NAME_RE = re.compile(r"\\node\b[^;]*?\(([^()\s]+)\)")
 COORDINATE_RE = re.compile(r"\(([^()]*,[^()]*)\)")
 COMMAND_RE = re.compile(r"\\([A-Za-z]+)")
+TIKZ_CONTENT_COMMAND_RE = re.compile(
+    r"\\(?:node|draw|path|coordinate|foreach|matrix|tikzset|definecolor|fill|filldraw|clip|shade)\b"
+)
 MAX_COMPILE_ATTEMPTS = 3
 FLOWCHART_STYLE_REPLACEMENTS = {
     "rounded rectangle": ("rectangle", "rounded corners"),
@@ -659,6 +662,7 @@ def clean_tikz(tikz: str) -> str:
 
     cleaned = remove_markdown_fences(tikz)
     cleaned = remove_latex_document_wrappers(cleaned)
+    cleaned = ensure_tikz_environment(cleaned)
     cleaned = extract_tikzpicture(cleaned)
     cleaned = remove_duplicate_tikz_environments(cleaned)
     cleaned = repair_option_lists(cleaned)
@@ -716,6 +720,22 @@ def remove_latex_document_wrappers(text: str) -> str:
     cleaned = cleaned.replace(r"\begin{document}", "")
     cleaned = cleaned.replace(r"\end{document}", "")
     return cleaned
+
+
+def ensure_tikz_environment(text: str) -> str:
+    """Add missing tikzpicture markers around obvious TikZ body content."""
+    begin_count = len(BEGIN_TIKZ_RE.findall(text))
+    end_count = text.count(END_TIKZ)
+
+    if begin_count and end_count:
+        return text
+    if begin_count:
+        return f"{text.rstrip()}\n{END_TIKZ}"
+    if end_count:
+        return f"\\begin{{tikzpicture}}\n{text.lstrip()}"
+    if TIKZ_CONTENT_COMMAND_RE.search(text):
+        return "\n".join([r"\begin{tikzpicture}", text.strip(), END_TIKZ])
+    return text
 
 
 def extract_tikzpicture(text: str) -> str:

@@ -662,6 +662,7 @@ def clean_tikz(tikz: str) -> str:
     cleaned = extract_tikzpicture(cleaned)
     cleaned = remove_duplicate_tikz_environments(cleaned)
     cleaned = repair_option_lists(cleaned)
+    cleaned = repair_node_identifiers(cleaned)
     cleaned = fix_duplicated_semicolons(cleaned)
     cleaned = remove_empty_nodes(cleaned)
     cleaned = ensure_draw_path_semicolons(cleaned)
@@ -751,6 +752,39 @@ def remove_duplicate_tikz_environments(tikz: str) -> str:
 def fix_duplicated_semicolons(tikz: str) -> str:
     """Collapse accidental duplicated TikZ semicolons."""
     return re.sub(r";\s*;+", ";", tikz)
+
+
+def repair_node_identifiers(tikz: str) -> str:
+    """Normalize escaped underscores inside parenthesized TikZ node identifiers."""
+    pieces: list[str] = []
+    index = 0
+    brace_depth = 0
+    bracket_depth = 0
+
+    while index < len(tikz):
+        character = tikz[index]
+        if character == "{" and not is_escaped(tikz, index):
+            brace_depth += 1
+        elif character == "}" and not is_escaped(tikz, index) and brace_depth > 0:
+            brace_depth -= 1
+        elif character == "[" and not is_escaped(tikz, index):
+            bracket_depth += 1
+        elif character == "]" and not is_escaped(tikz, index) and bracket_depth > 0:
+            bracket_depth -= 1
+        elif character == "(" and brace_depth == 0 and bracket_depth == 0 and not is_escaped(tikz, index):
+            close_index = tikz.find(")", index + 1)
+            if close_index != -1:
+                identifier = tikz[index + 1 : close_index]
+                if r"\_" in identifier and re.fullmatch(r"[^()\s,{}]*(?:\\_[^()\s,{}]*)+", identifier):
+                    repaired_identifier = identifier.replace(r"\_", "_")
+                    pieces.append(f"({repaired_identifier})")
+                    index = close_index + 1
+                    continue
+
+        pieces.append(character)
+        index += 1
+
+    return "".join(pieces)
 
 
 def remove_empty_nodes(tikz: str) -> str:

@@ -180,13 +180,22 @@ SUPPORTED_TIKZ_COMMANDS = {
     "Huge",
 }
 DISALLOWED_TIKZ_COMMANDS = {
+    "catcode",
     "documentclass",
-    "usepackage",
-    "usetikzlibrary",
+    "include",
+    "input",
+    "loop",
+    "newread",
+    "newwrite",
+    "openout",
+    "read",
+    "repeat",
     "beginpgfgraphicnamed",
     "includegraphics",
-    "input",
-    "include",
+    "usepackage",
+    "usetikzlibrary",
+    "write",
+    "write18",
 }
 
 logger = logging.getLogger(__name__)
@@ -979,11 +988,12 @@ def is_escaped(text: str, index: int) -> bool:
 
 
 def validate_supported_commands(tikz: str) -> None:
-    """Reject unsupported LaTeX commands inside generated TikZ."""
-    for command in COMMAND_RE.findall(tikz):
+    """Reject dangerous LaTeX commands inside generated TikZ."""
+    for match in COMMAND_RE.finditer(tikz):
+        if match.start() > 0 and tikz[match.start() - 1] == "\\":
+            continue
+        command = match.group(1)
         if command in DISALLOWED_TIKZ_COMMANDS:
-            raise TikzValidationError(f"Unsupported command: \\{command}.")
-        if command not in SUPPORTED_TIKZ_COMMANDS and not command.startswith("tikz"):
             raise TikzValidationError(f"Unsupported command: \\{command}.")
 
 

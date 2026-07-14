@@ -78,13 +78,6 @@ Full architecture documentation is available in [SYSTEM_ARCHITECTURE.md](SYSTEM_
 - Docker, Docker Compose, Nginx, Gunicorn, and cloud-compatible startup.
 - GitHub Actions CI for tests, syntax checks, Docker build, and container startup verification.
 
-## Screenshots
-
-The frontend renders generated PNG previews returned by the API at `/generated/images/<filename>`.
-
-### Demo GIF
-
-Demo GIF placeholder: add `docs/demo.gif` for the GitHub release page or portfolio case study.
 
 | View | Description |
 | --- | --- |

@@ -1,4 +1,7 @@
 # AI-LaTeX Diagram Generator
+Generate professional LaTeX TikZ diagrams from natural language using IBM Granite on IBM watsonx.ai.
+
+✨ AI-powered • 📄 TikZ & PDF Output • 🖼 PNG Preview • 🐳 Docker Ready • ☁️ Deployed on Vercel + Render
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![Flask](https://img.shields.io/badge/Flask-Backend-black)
@@ -8,16 +11,27 @@
 ![IBM Granite](https://img.shields.io/badge/IBM%20Granite-watsonx.ai-0F62FE)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://ai-la-te-x-diagram-generator.vercel.app)
+[![Backend API](https://img.shields.io/badge/API-Online-blue?style=for-the-badge)](https://ai-latex-diagram-generator.onrender.com/health)
+
 Generate publication-ready LaTeX TikZ diagrams from natural-language prompts using IBM Granite on IBM watsonx.ai.
 
 The project includes a Flask backend, completed frontend, IBM Granite integration, TikZ cleanup and validation, LaTeX compilation, PDF output, PNG previews, image upload, diagram refinement, Docker packaging, Gunicorn startup, structured logging, security headers, rate limiting, and production configuration.
 
-## Live Deployment
+## 🌐 Live Deployment
 
-Public application URL: `pending-cloud-deployment`
+- **Frontend (Vercel):** https://ai-la-te-x-diagram-generator.vercel.app
+- **Backend API (Render):** https://ai-latex-diagram-generator.onrender.com
 
-The repository is deployment-ready. Replace this value with the HTTPS URL from Render, Railway, Google Cloud Run, or Azure App Service after the production deployment is created.
+### Quick Links
 
+| Service | URL |
+|---------|-----|
+| 🚀 Live Application | https://ai-la-te-x-diagram-generator.vercel.app |
+| ⚙️ Backend API | https://ai-latex-diagram-generator.onrender.com |
+| ❤️ Health Check | https://ai-latex-diagram-generator.onrender.com/health |
+
+The frontend is hosted on **Vercel**, while the Flask backend is deployed on **Render**. The frontend communicates securely with the backend through the deployed REST API.
 ## Architecture
 
 ```mermaid
@@ -33,6 +47,14 @@ flowchart TD
 ```
 
 The browser frontend sends prompts, refinement requests, and image uploads through Nginx to the Flask API running on Gunicorn. The API calls IBM Granite for TikZ generation, normalizes and validates the TikZ, compiles it with LaTeX, generates a PDF, renders a PNG preview, and returns artifact URLs to the frontend.
+## ⚡ How It Works
+
+1. Enter a natural-language prompt.
+2. IBM Granite generates TikZ code.
+3. The backend validates and cleans the code.
+4. LaTeX compiles the TikZ into PDF.
+5. A PNG preview is generated.
+6. Download the PDF, PNG, or TikZ source.
 
 Full architecture documentation is available in [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md). Additional Mermaid diagrams are also mirrored in [docs/diagrams.md](docs/diagrams.md):
 

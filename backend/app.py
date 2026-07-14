@@ -247,14 +247,7 @@ def create_app() -> Flask:
     
 
     configure_security(app)
-   CORS(
-    app,
-    origins=[
-        "https://ai-la-te-x-diagram-generator.vercel.app"
-    ],
-    methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
-)
+    CORS(app)
     limiter.init_app(app)
     ensure_directories(app)
     register_request_hooks(app)

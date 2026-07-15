@@ -1,0 +1,29 @@
+{
+  "name": "AI-LaTeX Diagram Generator",
+  "description": "A Flask-based AI-LaTeX Diagram Generator using IBM Granite on IBM watsonx.ai, containerized with Docker.",
+  "repository": "https://github.com/your-username/your-repository",
+  "keywords": [
+    "flask",
+    "latex",
+    "diagram-generator",
+    "ai",
+    "ibm-granite",
+    "watsonx",
+    "docker"
+  ],
+  "env": {
+    "IBM_API_KEY": {
+      "required": true
+    },
+    "IBM_PROJECT_ID": {
+      "required": true
+    },
+    "IBM_URL": {
+      "required": true
+    },
+    "MODEL_ID": {
+      "required": true,
+      "value": "ibm/granite-4-h-small"
+    }
+  }
+}
